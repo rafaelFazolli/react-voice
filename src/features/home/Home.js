@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import TextContainer from '../../components/TextContainer/TextContainer';
 import Button from '../../components/Button/Button';
@@ -23,11 +23,52 @@ const Container = styled.div`
 `;
 
 const Home = () => {
+    let [text, writeText] = useState('');
+    let [finalText, writeFinalText] = useState('');
+    let [recording, activeButton] = useState(false);
+
+    useEffect(() => {
+        initSpeechRec();
+    });
+
+    const initSpeechRec = () => {
+        window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+        const recognizer = new window.SpeechRecognition();
+
+        if(recognizer !== null) {
+            recognizer.continous = true;
+            recognizer.interimResults = true;
+            recognizer.lang = 'pt-br';
+            
+            recognizer.onresult = event => {
+                for(let i = event.resultIndex; i < event.results.length; i++) {
+                    let transcript = event.results[i][0].transcript;
+                    if(event.results[i].isFinal) {
+                        writeFinalText(finalText += transcript + ' ');
+                    } else {
+                        writeText(text += transcript);
+                    }
+                }
+            };
+
+            if(recording) {
+                recognizer.start();
+                recognizer.onend = () => recognizer.start()
+            } else {
+                recognizer.stop();
+            }
+        }
+    }
+
+    const handleButton = () => {
+        activeButton(!recording);
+    }
+
     return(
         <HomeStyled>
             <Container>
-                <Button></Button>
-                <TextContainer></TextContainer>
+                <Button buttonAction={() => handleButton()}></Button>
+                <TextContainer newText={ text } finalText={ finalText }></TextContainer>
             </Container>
         </HomeStyled>
     );
