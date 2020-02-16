@@ -23,6 +23,8 @@ const Container = styled.div`
 `;
 
 const Home = () => {
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+    const recognizer = new window.SpeechRecognition();
     let [text, writeText] = useState('');
     let [finalText, writeFinalText] = useState('');
     let [recording, activeButton] = useState(false);
@@ -32,8 +34,12 @@ const Home = () => {
     });
 
     const initSpeechRec = () => {
-        window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
-        const recognizer = new window.SpeechRecognition();
+        if(recording) {
+            recognizer.start();
+            recognizer.onend = () => recognizer.start()
+        } else {
+            recognizer.stop();
+        }
 
         if(recognizer !== null) {
             recognizer.continous = true;
@@ -50,13 +56,6 @@ const Home = () => {
                     }
                 }
             };
-
-            if(recording) {
-                recognizer.start();
-                recognizer.onend = () => recognizer.start()
-            } else {
-                recognizer.stop();
-            }
         }
     }
 

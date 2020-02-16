@@ -13,8 +13,8 @@ export const buttonActiveAnimation = keyframes`
 `
 
 const ButtonStyled = styled.button`
-    width: 50px;
-    height: 50px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
     background: #db6eff;
     border: 0;
